@@ -1,0 +1,110 @@
+databaseChangeLog:
+  - changeSet:
+      id: "004-insert-roles-data"
+      author: Vladislav Stepanov
+      changes:
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: USER
+              - column:
+                  name: name
+                  value: Пользователь
+
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: CREDIT_USER
+              - column:
+                  name: name
+                  value: Пользователь кредитов
+
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: OVERDRAFT_USER
+              - column:
+                  name: name
+                  value: Пользователь овердрафтов
+
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: DEAL_SUPERUSER
+              - column:
+                  name: name
+                  value: Супер-пользователь сделок
+
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: CONTRACTOR_RUS
+              - column:
+                  name: name
+                  value: Пользователь контрагентов РФ
+
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: CONTRACTOR_SUPERUSER
+              - column:
+                  name: name
+                  value: Супер-пользователь контрагентов
+
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: SUPERUSER
+              - column:
+                  name: name
+                  value: Супер-пользователь
+
+        - insert:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  value: ADMIN
+              - column:
+                  name: name
+                  value: Администратор
+
+      rollback:
+        - delete:
+            tableName: roles
+            where: id = 'USER'
+        - delete:
+            tableName: roles
+            where: id = 'CREDIT_USER'
+        - delete:
+            tableName: roles
+            where: id = 'OVERDRAFT_USER'
+        - delete:
+            tableName: roles
+            where: id = 'DEAL_SUPERUSER'
+        - delete:
+            tableName: roles
+            where: id = 'CONTRACTOR_RUS'
+        - delete:
+            tableName: roles
+            where: id = 'CONTRACTOR_SUPERUSER'
+        - delete:
+            tableName: roles
+            where: id = 'SUPERUSER'
+        - delete:
+            tableName: roles
+            where: id = 'ADMIN'
