@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +34,7 @@ public class UserRolesController {
 
     @Operation(summary = "Сохранение ролей пользователя")
     @ApiResponse(responseCode = "200", description = "Роли успешно сохранены")
-//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/save")
     public ResponseEntity<Void> saveUserRoles(@Valid @RequestBody UserRolesRequest request) {
         userRoleService.saveUserRoles(request);
