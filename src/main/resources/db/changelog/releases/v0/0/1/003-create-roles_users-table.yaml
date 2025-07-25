@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: "003-create-roles_users-table"
+      author: Vladislav Stepanov
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_login
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_roles_user
+                    references: users(login)
+              - column:
+                  name: role_id
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_user_roles_role
+                    references: roles(id)
+
+        - createIndex:
+            indexName: idx_user_roles_user_login
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_login
+
+        - createIndex:
+            indexName: idx_user_roles_role_id
+            tableName: user_roles
+            columns:
+              - column:
+                  name: role_id
+
+      rollback:
+        - dropTable:
+            tableName: user_roles
