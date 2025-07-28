@@ -1,0 +1,18 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-add-oauth-info-to-user
+      author: developer
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: github_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: github_id
+            constraintName: uk_users_github_id

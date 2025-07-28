@@ -15,6 +15,12 @@ target/
 .springBeans
 .sts4-cache
 
+.env
+.env.local
+.env.production
+.env.test
+
+
 ### IntelliJ IDEA ###
 .idea
 *.iws

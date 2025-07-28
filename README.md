@@ -70,6 +70,12 @@ docker-compose logs -f
 
 – `/api/v1/auth/signin` – Авторизация пользователя
 
+– GET `/login` - Страница авторизации
+
+– POST `/login` - Авторизация пользователя с передачей логина и пароля
+
+– `/oauth2/redirect` - Страница с токеном при успешной авторизации через Oauth
+
 ## Configuration:
 
 `server.port` – Порт, на котором будет запущено приложение (по умолчанию 8081)
@@ -79,3 +85,11 @@ docker-compose logs -f
 `application.security.jwt.secret-key` – Секретный ключ для JWT
 
 `application.security.jwt.expiration` – Время жизни JWT (в секундах)
+
+`spring.security.oauth2.client.registration.github.client-id` - ID приложения для авторизации через GitHub
+
+`spring.security.oauth2.client.registration.github.client-secret` - Секретный ключ приложения для авторизации через GitHub
+
+`spring.security.oauth2.client.registration.google.client-id` - ID приложения для авторизации через Google
+
+`spring.security.oauth2.client.registration.google.client-secret` - Секретный ключ приложения для авторизации через Google

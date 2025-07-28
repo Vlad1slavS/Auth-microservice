@@ -21,7 +21,6 @@ databaseChangeLog:
                   name: email
                   type: VARCHAR(100)
                   constraints:
-                    unique: true
                     nullable: false
               - column:
                   name: active
@@ -29,6 +28,7 @@ databaseChangeLog:
                   defaultValueBoolean: true
                   constraints:
                     nullable: false
+
       rollback:
         - dropTable:
             tableName: users

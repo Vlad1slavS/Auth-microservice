@@ -2,6 +2,8 @@ package io.github.authmicroservice.security.config;
 
 import io.github.authmicroservice.security.auth.CustomAuthenticationProvider;
 import io.github.authmicroservice.security.auth.JwtAuthenticationFilter;
+import io.github.authmicroservice.security.handler.OAuth2AuthenticationFailureHandler;
+import io.github.authmicroservice.security.handler.OAuth2AuthenticationSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,11 +26,18 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CustomAuthenticationProvider customAuthenticationProvider;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter,
-                          CustomAuthenticationProvider customAuthenticationProvider) {
+                          CustomAuthenticationProvider customAuthenticationProvider,
+                          OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler,
+                          OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler
+                          ) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.customAuthenticationProvider = customAuthenticationProvider;
+        this.oAuth2AuthenticationFailureHandler = oAuth2AuthenticationFailureHandler;
+        this.oAuth2AuthenticationSuccessHandler = oAuth2AuthenticationSuccessHandler;
     }
 
     @Bean
@@ -36,6 +45,7 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/login", "/oauth2/**").permitAll()
                         .requestMatchers("api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("api/v1/user-roles/**").authenticated()
@@ -43,6 +53,11 @@ public class SecurityConfig {
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(customAuthenticationProvider)
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/login")
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
+                )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
