@@ -16,3 +16,10 @@ databaseChangeLog:
             tableName: users
             columnNames: github_id
             constraintName: uk_users_github_id
+
+        - createIndex:
+            tableName: users
+            columns:
+              - column:
+                  name: email
+            indexName: idx_users_email

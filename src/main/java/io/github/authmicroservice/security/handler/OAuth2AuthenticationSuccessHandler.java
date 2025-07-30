@@ -2,12 +2,12 @@ package io.github.authmicroservice.security.handler;
 
 import io.github.authmicroservice.model.dto.GitHubLoginInfo;
 import io.github.authmicroservice.model.dto.GoogleLoginInfo;
-import io.github.authmicroservice.model.dto.JwtResponse;
-import io.github.authmicroservice.service.AuthService;
+import io.github.authmicroservice.model.entity.User;
 import io.github.authmicroservice.service.GitHubApiService;
+import io.github.authmicroservice.service.JwtService;
+import io.github.authmicroservice.service.OauthUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -27,11 +27,14 @@ import java.util.Optional;
 @Component
 public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
-    private final AuthService authService;
+    private final JwtService jwtService;
+    private final OauthUserService oauthUserService;
     private final GitHubApiService gitHubApiService;
 
-    public OAuth2AuthenticationSuccessHandler(@Lazy AuthService authService, GitHubApiService gitHubApiService) {
-        this.authService = authService;
+    public OAuth2AuthenticationSuccessHandler(JwtService jwtService, OauthUserService oauthUserService,
+                                              GitHubApiService gitHubApiService) {
+        this.jwtService = jwtService;
+        this.oauthUserService = oauthUserService;
         this.gitHubApiService = gitHubApiService;
     }
 
@@ -45,7 +48,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
             String registrationId = ((OAuth2AuthenticationToken) authentication)
                     .getAuthorizedClientRegistrationId();
 
-            JwtResponse jwtResponse;
+            User user;
 
 
             if ("google".equals(registrationId)) {
@@ -57,7 +60,7 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                         .picture(oauth2User.getAttribute("picture"))
                         .build();
 
-                jwtResponse = authService.googleOauthLoginProcess(googleUserInfo);
+                user = oauthUserService.processGoogleOAuthUser(googleUserInfo);
 
             } else if ("github".equals(registrationId)) {
 
@@ -76,11 +79,11 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
                         .id(String.valueOf(id))
                         .login(oauth2User.getAttribute("login"))
                         .name(oauth2User.getAttribute("name"))
-                        .email(email)
+                        .email(null)
                         .avatarUrl(oauth2User.getAttribute("avatar_url"))
                         .build();
 
-                jwtResponse = authService.githubOauthLoginProcess(gitHubUserInfo);
+                user = oauthUserService.processGitHubOAuthUser(gitHubUserInfo);
 
             } else {
 
@@ -88,11 +91,11 @@ public class OAuth2AuthenticationSuccessHandler implements AuthenticationSuccess
 
             }
 
-            String responseToken = jwtResponse.getToken();
+            String jwt = jwtService.generateToken(user);
 
             String redirectUrl = UriComponentsBuilder
                     .fromUriString("/oauth2/redirect")
-                    .queryParam("token", responseToken)
+                    .queryParam("token", jwt)
                     .build(true)
                     .toUriString();
 
