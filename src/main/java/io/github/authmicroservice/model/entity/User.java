@@ -1,6 +1,9 @@
 package io.github.authmicroservice.model.entity;
 
+import io.github.authmicroservice.model.enums.Provider;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Column;
@@ -31,14 +34,30 @@ public class User implements UserDetails {
     @Id
     private String login;
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(name = "provider_type", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Provider provider;
+
     @Column(nullable = false)
     private boolean active;
+
+    @Column(name = "google_id")
+    private String googleId;
+
+    @Column(name = "github_id")
+    private String githubId;
+
+    @Column(name = "full_name")
+    private String fullName;
+
+    @Column(name = "profile_picture_url")
+    private String profilePictureUrl;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserRole> roles;

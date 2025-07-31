@@ -1,13 +1,16 @@
 package io.github.authmicroservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.authmicroservice.config.BaseTestSecurityConfig;
 import io.github.authmicroservice.model.dto.UserRolesRequest;
 import io.github.authmicroservice.model.entity.Role;
+import io.github.authmicroservice.security.config.SecurityConfig;
 import io.github.authmicroservice.service.UserRoleService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -24,9 +27,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@WebMvcTest(UserRolesController.class)
+@Import({SecurityConfig.class, BaseTestSecurityConfig.class})
 @AutoConfigureMockMvc
-public class UserRoleTest {
+public class UserRoleControllerTest {
 
     @MockitoBean
     private UserRoleService userRoleService;
@@ -76,7 +80,6 @@ public class UserRoleTest {
 
     @Test
     void saveUserRoles_WithoutAuthentication_Unauthorized() throws Exception {
-
         UserRolesRequest request = new UserRolesRequest();
         request.setLogin("testuser");
         request.setRoles(Arrays.asList(Role.RoleType.USER));
@@ -84,7 +87,7 @@ public class UserRoleTest {
         mockMvc.perform(put("/api/v1/user-roles/save")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isFound());
 
         verify(userRoleService, times(0)).saveUserRoles(any(UserRolesRequest.class));
     }
@@ -126,7 +129,7 @@ public class UserRoleTest {
         String login = "testuser";
 
         mockMvc.perform(get("/api/v1/user-roles/{login}", login))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isFound());
 
         verify(userRoleService, times(0)).getUserRoles(eq(login));
     }

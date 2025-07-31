@@ -1,0 +1,63 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-add-oauth-info-to-user
+      author: developer
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: provider_type
+                  type: VARCHAR(20)
+                  defaultValue: LOCAL
+                  constraints:
+                    nullable: false
+
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: google_id
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: full_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: true
+
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: profile_picture_url
+                  type: VARCHAR(500)
+                  constraints:
+                    nullable: true
+
+        - dropNotNullConstraint:
+            tableName: users
+            columnName: password
+            columnDataType: VARCHAR(255)
+
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: google_id
+            constraintName: uk_users_google_id
+
+        - addUniqueConstraint:
+            tableName: users
+            columnNames: email, provider_type
+            constraintName: uk_users_provider_type_email
+
+        - createIndex:
+            tableName: users
+            indexName: idx_users_provider_type
+            columns:
+              - column:
+                  name: provider_type
